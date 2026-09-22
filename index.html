@@ -388,38 +388,25 @@ import {
    1. CONFIGURATION — à personnaliser avant mise en ligne
    ============================================================ */
 
-<script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
+// Colle ici la config de ton projet Firebase (Console Firebase >
+// Paramètres du projet > Tes applications > SDK config).
+const firebaseConfig = {
+  apiKey: "AIzaSyBIHtsRTAexLMETj7rF0ALq6WKlnnYH1dQ",
+  authDomain: "reunions-firmes.firebaseapp.com",
+  projectId: "reunions-firmes",
+  storageBucket: "reunions-firmes.firebasestorage.app",
+  messagingSenderId: "1022330769053",
+  appId: "1:1022330769053:web:2e20b2bc7cce9eff79ce74"
+};
 
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
-    apiKey: "AIzaSyBIHtsRTAexLMETj7rF0ALq6WKlnnYH1dQ",
-    authDomain: "reunions-firmes.firebaseapp.com",
-    projectId: "reunions-firmes",
-    storageBucket: "reunions-firmes.firebasestorage.app",
-    messagingSenderId: "1022330769053",
-    appId: "1:1022330769053:web:2e20b2bc7cce9eff79ce74",
-    measurementId: "G-N386VPSPC6"
-  };
-
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-</script>
-  
 const NOM_COLLECTION = "creneaux_representants_2026";
 
 const NOM_ORGANISME = "CA 10-52";
 const TITRE_EVENEMENT = "Rencontres avec les représentants des firmes";
-const CONTACT_ORGANISATEUR = "Pour toute question : Simon DAL CIN - simon.dalcin@aube.chambagri.fr";
+const CONTACT_ORGANISATEUR = "Pour toute question : Simon — simon.dalcin@aube.chambagri.fr / 06 18 87 37 83";
 
 // Code d'accès à la vue organisateur (change-le avant diffusion).
-const CODE_ADMIN = "cnagSD*0789!";
+const CODE_ADMIN = "cnag0789";
 
 const JOURS = [
   { id: "2026-10-06", label: "Mardi", dateCourte: "6 octobre", dateLongue: "Mardi 6 octobre 2026" },
