@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Réunions représentants — GDA Sud de l'Aube</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#11181A;
+    --surface:#1A2326;
+    --surface-hover:#212C2F;
+    --border:#2B3639;
+    --text:#ECF1ED;
+    --text-muted:#90A399;
+    --accent:#A9C25C;
+    --accent-contrast:#16210B;
+    --taken:#C98552;
+    --taken-bg:rgba(201,133,82,0.12);
+    --danger:#C1523F;
+    --danger-bg:rgba(193,82,63,0.12);
+    --radius:10px;
+    --font:'Public Sans', system-ui, -apple-system, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--font);
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;}
+  .page{
+    max-width:720px;
+    margin:0 auto;
+    padding:40px 20px 80px;
+  }
+  header.hero{
+    margin-bottom:32px;
+  }
+  .hero-organisme{
+    font-size:14px;
+    font-weight:600;
+    color:var(--accent);
+    margin:0 0 8px;
+  }
+  .hero-titre{
+    font-size:28px;
+    font-weight:800;
+    letter-spacing:-0.01em;
+    margin:0 0 12px;
+    max-width:26ch;
+  }
+  .hero-sous-titre{
+    color:var(--text-muted);
+    font-size:15px;
+    margin:0;
+    max-width:52ch;
+  }
+  .compteur-global{
+    margin-top:18px;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:999px;
+    padding:6px 14px;
+    font-size:13px;
+    color:var(--text-muted);
+  }
+  .compteur-global strong{
+    color:var(--text);
+    font-weight:700;
+  }
+
+  .jours-tabs{
+    display:flex;
+    gap:8px;
+    margin-bottom:20px;
+    border-bottom:1px solid var(--border);
+  }
+  .jour-tab{
+    flex:1;
+    background:none;
+    border:none;
+    color:var(--text-muted);
+    font-family:var(--font);
+    font-size:14px;
+    font-weight:600;
+    padding:12px 8px 14px;
+    cursor:pointer;
+    border-bottom:2px solid transparent;
+    text-align:left;
+    transition:color .15s ease;
+  }
+  .jour-tab:hover{color:var(--text);}
+  .jour-tab.actif{
+    color:var(--text);
+    border-bottom-color:var(--accent);
+  }
+  .jour-tab .jour-date{
+    display:block;
+    font-size:17px;
+    font-weight:800;
+    margin-bottom:2px;
+  }
+  .jour-tab .jour-dispo{
+    display:block;
+    font-size:12.5px;
+    font-weight:500;
+    color:var(--text-muted);
+  }
+
+  .creneaux-liste{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .creneau-carte{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:16px 18px;
+  }
+  .creneau-horaire{
+    font-size:16px;
+    font-weight:700;
+  }
+  .creneau-duree{
+    font-size:13px;
+    color:var(--text-muted);
+    margin-top:2px;
+  }
+  .btn{
+    font-family:var(--font);
+    font-size:14px;
+    font-weight:600;
+    border-radius:8px;
+    padding:9px 16px;
+    border:1px solid transparent;
+    cursor:pointer;
+    transition:filter .15s ease, transform .05s ease;
+    white-space:nowrap;
+  }
+  .btn:active{transform:scale(0.98);}
+  .btn-reserver{
+    background:var(--accent);
+    color:var(--accent-contrast);
+  }
+  .btn-reserver:hover{filter:brightness(1.08);}
+  .pill-reserve{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    background:var(--taken-bg);
+    color:var(--taken);
+    font-size:13px;
+    font-weight:700;
+    padding:8px 14px;
+    border-radius:999px;
+  }
+  .pause-dejeuner{
+    text-align:center;
+    color:var(--text-muted);
+    font-size:13px;
+    padding:6px 0;
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+  .pause-dejeuner::before,
+  .pause-dejeuner::after{
+    content:"";
+    flex:1;
+    height:1px;
+    background:var(--border);
+  }
+
+  footer.pied{
+    margin-top:56px;
+    padding-top:20px;
+    border-top:1px solid var(--border);
+    font-size:12.5px;
+    color:var(--text-muted);
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+  footer.pied a.lien-admin{
+    background:none;
+    border:none;
+    color:var(--text-muted);
+    font-family:var(--font);
+    font-size:12.5px;
+    cursor:pointer;
+    text-decoration:underline;
+    padding:0;
+  }
+
+  /* Modal */
+  .modal-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(6,10,11,0.72);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    z-index:50;
+  }
+  .modal-overlay[hidden]{display:none;}
+  .modal-boite{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:14px;
+    width:100%;
+    max-width:420px;
+    padding:24px;
+    max-height:90vh;
+    overflow-y:auto;
+  }
+  .modal-entete{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    margin-bottom:4px;
+  }
+  .modal-titre{
+    font-size:18px;
+    font-weight:800;
+    margin:0;
+  }
+  .modal-fermer{
+    background:none;
+    border:none;
+    color:var(--text-muted);
+    font-size:20px;
+    line-height:1;
+    cursor:pointer;
+    padding:4px;
+  }
+  .modal-fermer:hover{color:var(--text);}
+  .modal-sous-titre{
+    color:var(--text-muted);
+    font-size:14px;
+    margin:4px 0 18px;
+  }
+  .champ{
+    margin-bottom:14px;
+  }
+  .champ label{
+    display:block;
+    font-size:13px;
+    font-weight:600;
+    margin-bottom:6px;
+    color:var(--text-muted);
+  }
+  .champ input{
+    width:100%;
+    background:var(--bg);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:10px 12px;
+    color:var(--text);
+    font-family:var(--font);
+    font-size:14px;
+  }
+  .champ input:focus{
+    outline:2px solid var(--accent);
+    outline-offset:1px;
+  }
+  .modal-erreur{
+    background:var(--danger-bg);
+    color:var(--danger);
+    border-radius:8px;
+    padding:10px 12px;
+    font-size:13px;
+    margin-bottom:14px;
+  }
+  .modal-actions{
+    display:flex;
+    gap:10px;
+    margin-top:18px;
+  }
+  .modal-actions .btn{flex:1;}
+  .btn-secondaire{
+    background:none;
+    border:1px solid var(--border);
+    color:var(--text);
+  }
+  .btn-secondaire:hover{background:var(--surface-hover);}
+  .confirmation{
+    text-align:center;
+    padding:8px 0 4px;
+  }
+  .confirmation .coche{
+    width:44px;height:44px;border-radius:50%;
+    background:var(--accent);
+    color:var(--accent-contrast);
+    display:flex;align-items:center;justify-content:center;
+    margin:0 auto 14px;
+    font-size:22px;font-weight:800;
+  }
+
+  /* Vue admin */
+  .admin-table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:13.5px;
+  }
+  .admin-table th{
+    text-align:left;
+    color:var(--text-muted);
+    font-weight:600;
+    padding:8px 10px;
+    border-bottom:1px solid var(--border);
+  }
+  .admin-table td{
+    padding:10px;
+    border-bottom:1px solid var(--border);
+    vertical-align:top;
+  }
+  .admin-table tr:last-child td{border-bottom:none;}
+  .btn-liberer{
+    background:none;
+    border:1px solid var(--danger);
+    color:var(--danger);
+    font-size:12px;
+    padding:5px 10px;
+  }
+  .btn-liberer:hover{background:var(--danger-bg);}
+  .admin-vide{color:var(--text-muted);font-size:13px;}
+  .admin-titre-jour{
+    font-size:14px;
+    font-weight:700;
+    margin:24px 0 8px;
+  }
+  .admin-titre-jour:first-child{margin-top:0;}
+
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important;}
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <header class="hero">
+    <p class="hero-organisme" id="nom-organisme"></p>
+    <h1 class="hero-titre" id="titre-evenement"></h1>
+    <p class="hero-sous-titre">Choisissez un créneau libre ci-dessous pour organiser votre rendez-vous. Les créneaux déjà pris disparaissent automatiquement des disponibilités.</p>
+    <div class="compteur-global" id="compteur-global"></div>
+  </header>
+
+  <nav class="jours-tabs" id="jours-tabs"></nav>
+
+  <main class="creneaux-liste" id="liste-creneaux"></main>
+
+  <footer class="pied">
+    <span id="contact-organisateur"></span>
+    <button class="lien-admin" id="lien-admin" type="button">Espace organisateur</button>
+  </footer>
+</div>
+
+<!-- Modal réservation -->
+<div class="modal-overlay" id="modal" hidden>
+  <div class="modal-boite" id="modal-boite"></div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getFirestore, doc, deleteDoc, onSnapshot, collection,
+  runTransaction, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+/* ============================================================
+   1. CONFIGURATION — à personnaliser avant mise en ligne
+   ============================================================ */
+
+// Colle ici la config de ton projet Firebase (Console Firebase >
+// Paramètres du projet > Tes applications > SDK config).
+const firebaseConfig = {
+  apiKey: "COLLE_TA_CLE_API_ICI",
+  authDomain: "TON-PROJET.firebaseapp.com",
+  projectId: "TON-PROJET",
+  storageBucket: "TON-PROJET.appspot.com",
+  messagingSenderId: "000000000000",
+  appId: "1:000000000000:web:xxxxxxxxxxxxxxxxxxxxxx"
+};
+
+const NOM_COLLECTION = "creneaux_representants_2026";
+
+const NOM_ORGANISME = "GDA Sud de l'Aube";
+const TITRE_EVENEMENT = "Rencontres avec les représentants des firmes";
+const CONTACT_ORGANISATEUR = "Pour toute question : Simon — [email / téléphone à compléter]";
+
+// Code d'accès à la vue organisateur (change-le avant diffusion).
+const CODE_ADMIN = "change-moi-2026";
+
+const JOURS = [
+  { id: "2026-10-06", label: "Mardi", dateCourte: "6 octobre", dateLongue: "Mardi 6 octobre 2026" },
+  { id: "2026-10-08", label: "Jeudi", dateCourte: "8 octobre", dateLongue: "Jeudi 8 octobre 2026" }
+];
+
+const CRENEAUX_HORAIRES = [
+  { debut: "09:00", fin: "10:00" },
+  { debut: "10:15", fin: "11:15" },
+  { debut: "11:30", fin: "12:30" },
+  { debut: "14:00", fin: "15:00" },
+  { debut: "15:15", fin: "16:15" },
+  { debut: "16:30", fin: "17:30" }
+];
+
+/* ============================================================
+   2. INITIALISATION
+   ============================================================ */
+
+document.getElementById("nom-organisme").textContent = NOM_ORGANISME;
+document.getElementById("titre-evenement").textContent = TITRE_EVENEMENT;
+document.getElementById("contact-organisateur").textContent = CONTACT_ORGANISATEUR;
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+function idCreneau(jourId, debut){
+  return `${jourId}_${debut.replace(":", "h")}`;
+}
+
+// état local, rempli en temps réel par Firestore
+let reservations = {}; // { idCreneau: {nom, societe, email, telephone} }
+let jourActifIndex = 0;
+let venMode = "public"; // "public" ou "admin"
+
+const elTabs = document.getElementById("jours-tabs");
+const elListe = document.getElementById("liste-creneaux");
+const elCompteur = document.getElementById("compteur-global");
+const elModal = document.getElementById("modal");
+const elModalBoite = document.getElementById("modal-boite");
+const elLienAdmin = document.getElementById("lien-admin");
+
+onSnapshot(collection(db, NOM_COLLECTION), (snap) => {
+  reservations = {};
+  snap.forEach((d) => { reservations[d.id] = d.data(); });
+  render();
+});
+
+/* ============================================================
+   3. RENDU — onglets jours + liste des créneaux
+   ============================================================ */
+
+function totalCreneaux(){ return JOURS.length * CRENEAUX_HORAIRES.length; }
+function totalPris(){ return Object.keys(reservations).length; }
+
+function render(){
+  if(venMode === "admin"){ renderAdmin(); return; }
+  renderTabs();
+  renderListeJour();
+  renderCompteurGlobal();
+}
+
+function renderCompteurGlobal(){
+  const libres = totalCreneaux() - totalPris();
+  elCompteur.innerHTML = `<strong>${libres}</strong> créneau${libres > 1 ? "x" : ""} encore libre${libres > 1 ? "s" : ""} sur ${totalCreneaux()}`;
+}
+
+function renderTabs(){
+  elTabs.innerHTML = "";
+  JOURS.forEach((jour, index) => {
+    const prisCeJour = CRENEAUX_HORAIRES.filter(c => reservations[idCreneau(jour.id, c.debut)]).length;
+    const libres = CRENEAUX_HORAIRES.length - prisCeJour;
+    const btn = document.createElement("button");
+    btn.className = "jour-tab" + (index === jourActifIndex ? " actif" : "");
+    btn.type = "button";
+    btn.innerHTML = `
+      <span class="jour-date">${jour.label} ${jour.dateCourte}</span>
+      <span class="jour-dispo">${libres} place${libres > 1 ? "s" : ""} libre${libres > 1 ? "s" : ""}</span>
+    `;
+    btn.addEventListener("click", () => { jourActifIndex = index; render(); });
+    elTabs.appendChild(btn);
+  });
+}
+
+function renderListeJour(){
+  const jour = JOURS[jourActifIndex];
+  elListe.innerHTML = "";
+  CRENEAUX_HORAIRES.forEach((creneau, index) => {
+    // insère la pause déjeuner juste avant le 4e créneau (14h00)
+    if(index === 3){
+      const pause = document.createElement("div");
+      pause.className = "pause-dejeuner";
+      pause.textContent = "Pause déjeuner — 12h30 à 14h00";
+      elListe.appendChild(pause);
+    }
+    const cid = idCreneau(jour.id, creneau.debut);
+    const pris = reservations[cid];
+    const carte = document.createElement("div");
+    carte.className = "creneau-carte";
+    carte.innerHTML = `
+      <div>
+        <div class="creneau-horaire">${creneau.debut} – ${creneau.fin}</div>
+        <div class="creneau-duree">1h de rendez-vous</div>
+      </div>
+      ${pris
+        ? `<span class="pill-reserve">Réservé</span>`
+        : `<button class="btn btn-reserver" type="button">Réserver</button>`}
+    `;
+    if(!pris){
+      carte.querySelector("button").addEventListener("click", () => ouvrirModalReservation(jour, creneau, cid));
+    }
+    elListe.appendChild(carte);
+  });
+}
+
+/* ============================================================
+   4. MODAL — formulaire de réservation
+   ============================================================ */
+
+function fermerModal(){
+  elModal.hidden = true;
+  elModalBoite.innerHTML = "";
+}
+
+elModal.addEventListener("click", (e) => { if(e.target === elModal) fermerModal(); });
+
+function ouvrirModalReservation(jour, creneau, cid){
+  elModal.hidden = false;
+  elModalBoite.innerHTML = `
+    <div class="modal-entete">
+      <h2 class="modal-titre">Réserver ce créneau</h2>
+      <button class="modal-fermer" type="button" aria-label="Fermer">×</button>
+    </div>
+    <p class="modal-sous-titre">${jour.dateLongue} · ${creneau.debut} – ${creneau.fin}</p>
+    <div id="modal-erreur-zone"></div>
+    <form id="form-reservation">
+      <div class="champ">
+        <label for="champ-nom">Nom et prénom</label>
+        <input id="champ-nom" name="nom" type="text" required autocomplete="name">
+      </div>
+      <div class="champ">
+        <label for="champ-societe">Société / firme</label>
+        <input id="champ-societe" name="societe" type="text" required autocomplete="organization">
+      </div>
+      <div class="champ">
+        <label for="champ-email">Email</label>
+        <input id="champ-email" name="email" type="email" required autocomplete="email">
+      </div>
+      <div class="champ">
+        <label for="champ-telephone">Téléphone (facultatif)</label>
+        <input id="champ-telephone" name="telephone" type="tel" autocomplete="tel">
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondaire" id="btn-annuler">Annuler</button>
+        <button type="submit" class="btn btn-reserver" id="btn-confirmer">Confirmer la réservation</button>
+      </div>
+    </form>
+  `;
+  elModalBoite.querySelector(".modal-fermer").addEventListener("click", fermerModal);
+  elModalBoite.querySelector("#btn-annuler").addEventListener("click", fermerModal);
+  elModalBoite.querySelector("#form-reservation").addEventListener("submit", (e) => {
+    e.preventDefault();
+    soumettreReservation(jour, creneau, cid, e.target);
+  });
+}
+
+async function soumettreReservation(jour, creneau, cid, formEl){
+  const zoneErreur = document.getElementById("modal-erreur-zone");
+  zoneErreur.innerHTML = "";
+  const btn = document.getElementById("btn-confirmer");
+  btn.disabled = true;
+  btn.textContent = "Enregistrement…";
+
+  const data = {
+    nom: formEl.nom.value.trim(),
+    societe: formEl.societe.value.trim(),
+    email: formEl.email.value.trim(),
+    telephone: formEl.telephone.value.trim() || null
+  };
+
+  const ref = doc(db, NOM_COLLECTION, cid);
+  try{
+    await runTransaction(db, async (transaction) => {
+      const snap = await transaction.get(ref);
+      if(snap.exists()){
+        throw new Error("CRENEAU_DEJA_PRIS");
+      }
+      transaction.set(ref, { ...data, horodatage: serverTimestamp() });
+    });
+    afficherConfirmation(jour, creneau);
+  }catch(err){
+    btn.disabled = false;
+    btn.textContent = "Confirmer la réservation";
+    if(err.message === "CRENEAU_DEJA_PRIS"){
+      zoneErreur.innerHTML = `<div class="modal-erreur">Ce créneau vient d'être réservé entre-temps. Merci de fermer cette fenêtre et d'en choisir un autre.</div>`;
+    }else{
+      console.error(err);
+      zoneErreur.innerHTML = `<div class="modal-erreur">Une erreur est survenue. Merci de réessayer.</div>`;
+    }
+  }
+}
+
+function afficherConfirmation(jour, creneau){
+  elModalBoite.innerHTML = `
+    <div class="confirmation">
+      <div class="coche">✓</div>
+      <h2 class="modal-titre">Créneau confirmé</h2>
+      <p class="modal-sous-titre">${jour.dateLongue} · ${creneau.debut} – ${creneau.fin}</p>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-reserver" id="btn-fermer-confirmation" style="flex:1">Fermer</button>
+      </div>
+    </div>
+  `;
+  document.getElementById("btn-fermer-confirmation").addEventListener("click", fermerModal);
+}
+
+/* ============================================================
+   5. VUE ORGANISATEUR
+   ============================================================ */
+
+elLienAdmin.addEventListener("click", () => {
+  if(venMode === "admin"){ venMode = "public"; render(); return; }
+  const code = prompt("Code organisateur :");
+  if(code === CODE_ADMIN){
+    venMode = "admin";
+    render();
+  }else if(code !== null){
+    alert("Code incorrect.");
+  }
+});
+
+function renderAdmin(){
+  elTabs.innerHTML = "";
+  elCompteur.innerHTML = `<strong>${totalPris()}</strong> réservation${totalPris() > 1 ? "s" : ""} sur ${totalCreneaux()} créneaux`;
+
+  let html = "";
+  JOURS.forEach((jour) => {
+    html += `<div class="admin-titre-jour">${jour.dateLongue}</div>`;
+    const lignes = CRENEAUX_HORAIRES.map((c) => {
+      const cid = idCreneau(jour.id, c.debut);
+      const r = reservations[cid];
+      if(!r){
+        return `<tr><td>${c.debut} – ${c.fin}</td><td colspan="4" class="admin-vide">Libre</td></tr>`;
+      }
+      return `
+        <tr>
+          <td>${c.debut} – ${c.fin}</td>
+          <td>${escapeHtml(r.nom || "")}</td>
+          <td>${escapeHtml(r.societe || "")}</td>
+          <td>${escapeHtml(r.email || "")}${r.telephone ? "<br>" + escapeHtml(r.telephone) : ""}</td>
+          <td><button class="btn btn-liberer" data-cid="${cid}" type="button">Libérer</button></td>
+        </tr>`;
+    }).join("");
+    html += `
+      <table class="admin-table">
+        <thead><tr><th>Horaire</th><th>Nom</th><th>Société</th><th>Contact</th><th></th></tr></thead>
+        <tbody>${lignes}</tbody>
+      </table>`;
+  });
+  elListe.innerHTML = html;
+
+  elListe.querySelectorAll(".btn-liberer").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      if(!confirm("Libérer ce créneau ? La réservation sera définitivement supprimée.")) return;
+      await deleteDoc(doc(db, NOM_COLLECTION, btn.dataset.cid));
+    });
+  });
+}
+
+function escapeHtml(str){
+  const div = document.createElement("div");
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+render();
+</script>
+
+</body>
+</html>
